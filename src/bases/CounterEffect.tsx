@@ -1,26 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { gsap } from 'gsap';
 
 const MAXIMUN_NUM = 10;
 
 export const CounterEffect = () => {
   const [counterEffect, setCounterEffect] = useState(5);
-  
+  const counterElement = useRef<HTMLHeadingElement>(null);
+
   const handleClick = () => {
-    setCounterEffect( prev => prev + 1);
+    setCounterEffect( prev => Math.min(prev + 1, MAXIMUN_NUM));
   }
 
-  useEffect(() => {
-    if (counterEffect <= 10) return;
+  useLayoutEffect(() => {
+    if (counterEffect < 10) return;
 
-    console.log('%cvalor maximo', 'color: red: background-color: black');
+    
+    const tl = gsap.timeline();
 
-    return () => console.log('clean');
+    tl.to(counterElement.current,{y: -10, duration: 0.2, ease: 'ease.out' })
+      .to(counterElement.current, { y: 0, duration: 1, ease: 'bounce.out' });
+
   }, [counterEffect]);
 
 
   return (
     <>
-      <h1>Counter: { counterEffect }</h1>
+      <h1>CounterEffect:</h1>
+      <h2 ref={ counterElement }>{ counterEffect }</h2>
 
       <button onClick={ handleClick }>+1</button>
     </>
